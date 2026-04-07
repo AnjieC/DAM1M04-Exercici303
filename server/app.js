@@ -135,11 +135,12 @@ app.get('/', async (req, res) => {
 app.get('/movies', async (req, res) => {
   try {
     const filmRows = await db.query(`
-      SELECT film_id, title, description, release_year
-      FROM film
-      ORDER BY film_id
+      SELECT f.film_id, f.title, f.description, f.release_year, f.length, f.rating, l.name
+      FROM film f
+      JOIN language l ON f.language_id = l.language_id
+      ORDER BY f.film_id
       LIMIT 15
-    `);
+`    );
 
     const actorRows = await db.query(`
       SELECT a.actor_id, a.first_name, a.last_name, fa.film_id
@@ -207,16 +208,16 @@ app.get('/customers', async (req, res) => {
 
     const rentalRows = await db.query(`
       SELECT r.customer_id, f.title
-      FROM rental r
-      JOIN inventory i ON i.inventory_id = r.inventory_id
-      JOIN film f ON f.film_id = i.film_id
-      WHERE r.customer_id IN (
+      FROM (
         SELECT customer_id
         FROM customer
         ORDER BY customer_id
         LIMIT 25
-      )
-    `);
+      ) c
+      JOIN rental r ON r.customer_id = c.customer_id
+      JOIN inventory i ON i.inventory_id = r.inventory_id
+      JOIN film f ON f.film_id = i.film_id
+`    );
 
     const customerJson = db.table_to_json(customerRows, {
       customer_id: 'number',

@@ -42,13 +42,25 @@ footer{
 }
 
 section{
-    margin: 0 400px;
+    margin: 2% 7%;
 }
 
-h1{
-    font-size: xx-large;
-}
-
-.texto_centrado{
+.titulopag{
     text-align: center;
+    padding-top: 40px;
+}
+
+.caratula{
+    width: 90%;
+}
+
+.pelis{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2%;
+    justify-content: center;
+}
+
+.pelis div{
+    flex: 0 0 250px;
 }

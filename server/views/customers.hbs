@@ -6,17 +6,19 @@
     </head>
     <body>
         {{> menu}}
-        <h1 class="texto_centrado">Customers</h1>
-        <div class="contenido">
-            {{#each customers}}
-                <p>{{first_name}} {{last_name}}</p>
-                <ul>
-                    {{#each rentals}}
-                        <li>{{title}}</li>
-                    {{/each}}
-                </ul>
+        <h1 class="titulopag">Customers</h1>
+        <section class="contenido pelis">
+            {{#each customers}}                
+                <div>
+                    <p><strong>{{first_name}} {{last_name}}</strong></p>
+                    <ol>
+                        {{#each rentals}}
+                            <li>{{title}}</li>
+                        {{/each}}
+                    </ol>
+                </div>
             {{/each}}
-        </div>
+        </section>
         {{> footer}}
     </body>
 </html>

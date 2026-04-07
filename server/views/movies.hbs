@@ -6,23 +6,25 @@
     </head>
     <body>
         {{> menu}}
-        <h1 class="texto_centrado">Películas</h1>
-        <div class="contenido">
+        <h1 class="titulopag">Películas</h1>
+        <section class="contenido pelis">
             {{#each film}}
-                <h2>{{title}}</h2>
-                <p>{{description}}</p>
-                <p><strong>Año:</strong> {{release_year}}</p>
-                <p><strong>Idioma:</strong> {{name}}</p>
-                <p><strong>Duración:</strong> {{length}}</p>
-                <p><strong>Rating:</strong> {{rating}}</p>
-                <p><strong>Actores:</strong></p>
-                <ul>
-                    {{#each actors}}
-                        <li>{{first_name}} {{last_name}}</li>
-                    {{/each}}
-                </ul>
+                <div>
+                    <h2>{{title}}</h2>
+                    <p>{{description}}</p>
+                    <p><strong>Año:</strong> {{release_year}}</p>
+                    <p><strong>Idioma:</strong> {{name}}</p>
+                    <p><strong>Duración:</strong> {{length}} min</p>
+                    <p><strong>Rating:</strong> {{rating}}</p>
+                    <p><strong>Actores:</strong></p>
+                    <ul>
+                        {{#each actors}}
+                            <li>{{first_name}} {{last_name}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
             {{/each}}
-        </div>
+        </section>
         {{> footer}}
     </body>
 </html>
