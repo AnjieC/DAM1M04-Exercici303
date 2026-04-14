@@ -6,21 +6,24 @@
     </head>
     <body>
         {{> menu}}
-        <section class="contenido">
+        <section class="contenido detalles">
+            <div>
+                <img src="/imatges/caratula.png" alt="caratula">
+            </div>
             <div>
                 <h1>{{movie.title}}</h1>
-                <img class="caratula" src="/imatges/caratula.png" alt="caratula">
                 <p>{{movie.description}}</p>
                 <p><strong>Año:</strong> {{movie.release_year}}</p>
-                <p><strong>Idioma:</strong> {{movie.name}}</p>
+                <p><strong>Idioma:</strong> {{movie.language}}</p>
                 <p><strong>Duración:</strong> {{movie.length}} min</p>
                 <p><strong>Rating:</strong> {{movie.rating}}</p>
                 <p><strong>Actores:</strong></p>
                 <ul>
-                    {{#each actors}}
+                    {{#each movie.actors}}
                         <li>{{first_name}} {{last_name}}</li>
                     {{/each}}
                 </ul>
+                <a href="/movieEdit?id={{movie.film_id}}">Editar</a>
                 <a href="/movies">Volver a Movies</a>
             </div>
         </section>

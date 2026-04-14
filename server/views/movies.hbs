@@ -11,6 +11,7 @@
             {{#each film}}
                 <div>
                     <h2>{{title}}</h2>
+                    <img class="caratula" src="/imatges/caratula.png" alt="caratula">
                     <p>{{description}}</p>
                     <p><strong>Año:</strong> {{release_year}}</p>
                     <p><strong>Idioma:</strong> {{name}}</p>
@@ -22,7 +23,7 @@
                             <li>{{first_name}} {{last_name}}</li>
                         {{/each}}
                     </ul>
-                    <a href="/movie/{{film_id}}">Ver detalles...</a>
+                    <a href="/movie?id={{film_id}}">Ver detalles...</a>
                 </div>
             {{/each}}
         </section>

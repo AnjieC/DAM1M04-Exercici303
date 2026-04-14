@@ -31,6 +31,7 @@ nav a:hover{
 
 footer{
     width: 100%;
+    margin-top: 20px;
     padding: 15px 0;
     background-color: black;
     color: white;
@@ -51,7 +52,7 @@ section{
 }
 
 .caratula{
-    width: 90%;
+    width: 100%;
 }
 
 .pelis{
@@ -63,4 +64,24 @@ section{
 
 .pelis div{
     flex: 0 0 250px;
+}
+
+.categorias{
+    display: flex;
+    padding: 0;
+    justify-content: space-around;
+}
+
+.detalles{
+    display: flex;
+    justify-content: center;
+    gap: 70px;
+}
+
+.detalles div{
+    width: 33%;
+}
+
+.detalles img{
+    width: 100%;
 }

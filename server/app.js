@@ -197,6 +197,157 @@ app.get('/movies', async (req, res) => {
   }
 });
 
+app.get('/movie', async (req, res) => {
+  try {
+    // 1. Llegir el paràmetre id
+    const filmId = parseInt(req.query.id, 10);
+
+    // 2. Validar id
+    if (!Number.isInteger(filmId) || filmId <= 0) {
+      return res.status(400).send('Paràmetre id invàlid');
+    }
+
+    // 3. Query pel·lícula + idioma
+    const filmRows = await db.query(`
+      SELECT
+        f.film_id,
+        f.title,
+        f.description,
+        f.release_year,
+        f.length,
+        f.rating,
+        l.name AS language
+      FROM film f
+      JOIN language l ON f.language_id = l.language_id
+      WHERE f.film_id = ${[filmId]}
+      LIMIT 1;
+    `);
+
+    // 4. Si no existeix
+    if (!filmRows || filmRows.length === 0) {
+      return res.status(404).send('Pel·lícula no trobada');
+    }
+
+    // 5. Actors de la pel·lícula
+    const actorRows = await db.query(`
+      SELECT a.first_name, a.last_name
+      FROM actor a
+      JOIN film_actor fa ON fa.actor_id = a.actor_id
+      WHERE fa.film_id = ${[filmId]}
+    `);
+
+    // 6. Convertir a JSON
+    const filmJson = db.table_to_json(filmRows, {
+      film_id: 'number',
+      title: 'string',
+      description: 'string',
+      release_year: 'number',
+      length: 'number',
+      rating: 'string',
+      language: 'string'
+    });
+
+    const actorJson = db.table_to_json(actorRows, {
+      first_name: 'string',
+      last_name: 'string'
+    });
+
+    // 7. Afegir actors a la peli
+    const filmData = {
+      ...filmJson[0],
+      actors: actorJson
+    };
+
+    // 8. Dades comunes
+    const commonData = JSON.parse(
+      fs.readFileSync(path.join(__dirname, 'data', 'common.json'), 'utf8')
+    );
+
+    // 9. Render
+    res.render('movie', {
+      movie: filmData,
+      common: commonData,
+      currentPage: 'movies'
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error consultant la base de dades');
+  }
+});
+
+app.get('/movieEdit', async (req, res) => {
+  try {
+    // 1. Llegir id
+    const filmId = parseInt(req.query.id, 10);
+
+    // 2. Validar
+    if (!Number.isInteger(filmId) || filmId <= 0) {
+      return res.status(400).send('Paràmetre id invàlid');
+    }
+
+    // 3. Query pel·lícula
+    const filmRows = await db.query(`
+      SELECT
+        f.film_id,
+        f.title,
+        f.description,
+        f.release_year,
+        f.length,
+        f.rating,
+        f.language_id
+      FROM film f
+      WHERE f.film_id = ${filmId}
+      LIMIT 1;
+    `);
+
+    // 4. Si no existeix
+    if (!filmRows || filmRows.length === 0) {
+      return res.status(404).send('Pel·lícula no trobada');
+    }
+
+    // 5. Llista d’idiomes (per un select al formulari)
+    const languageRows = await db.query(`
+      SELECT language_id, name
+      FROM language
+      ORDER BY name;
+    `);
+
+    // 6. Convertir a JSON
+    const filmJson = db.table_to_json(filmRows, {
+      film_id: 'number',
+      title: 'string',
+      description: 'string',
+      release_year: 'number',
+      length: 'number',
+      rating: 'string',
+      language_id: 'number'
+    })[0];
+
+    const languageJson = db.table_to_json(languageRows, {
+      language_id: 'number',
+      name: 'string'
+    });
+
+    // 7. Dades comunes
+    const commonData = JSON.parse(
+      fs.readFileSync(path.join(__dirname, 'data', 'common.json'), 'utf8')
+    );
+
+    // 8. Render
+    res.render('movieEdit', {
+      movie: filmJson,
+      languages: languageJson,
+      common: commonData,
+      currentPage: 'movies'
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error consultant la base de dades');
+  }
+});
+
 app.get('/customers', async (req, res) => {
   try {
     const customerRows = await db.query(`
@@ -253,16 +404,6 @@ app.get('/customers', async (req, res) => {
     console.error(err);
     res.status(500).send('Error consultant la base de dades');
   }
-});
-
-app.get('/movie/:id', (req, res) => {
-  const id = req.params.id;
-
-  db.query('SELECT * FROM film WHERE film_id = ?', [id], (err, results) => {
-    if (err) throw err;
-
-    res.render('movie', { movie: results[0] });
-  });
 });
 
 // Start server
