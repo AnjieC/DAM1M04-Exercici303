@@ -255,6 +255,16 @@ app.get('/customers', async (req, res) => {
   }
 });
 
+app.get('/movie/:id', (req, res) => {
+  const id = req.params.id;
+
+  db.query('SELECT * FROM film WHERE film_id = ?', [id], (err, results) => {
+    if (err) throw err;
+
+    res.render('movie', { movie: results[0] });
+  });
+});
+
 // Start server
 const httpServer = app.listen(port, () => {
   console.log(`http://localhost:${port}`);
