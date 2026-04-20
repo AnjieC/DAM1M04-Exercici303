@@ -23,8 +23,8 @@
                         <li>{{first_name}} {{last_name}}</li>
                     {{/each}}
                 </ul>
-                <a href="/movieEdit?id={{movie.film_id}}">Editar</a>
-                <a href="/movies">Volver a Movies</a>
+                <a href="/movieEdit?id={{movie.film_id}}" class="editar"><button>Editar</button></a>
+                <a href="/movies" class="volver"><button>Volver a Movies</button></a>
             </div>
         </section>
         {{> footer}}

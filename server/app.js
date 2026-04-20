@@ -398,12 +398,25 @@ app.post('/editarPeli', async (req, res) => {
 
 app.post('/esborrarPeli', async (req, res) => {
   try {
-    const { film_id } = req.body;
+    const film_id = parseInt(req.body.film_id, 10);
+
+    if (!film_id) {
+      return res.status(400).send('ID inválido');
+    }
+
+    console.log("Borrando film:", film_id);
 
     await db.query(`
-      DELETE FROM film
-      WHERE film_id = ${film_id}
+      DELETE FROM rental 
+      WHERE inventory_id IN (
+        SELECT inventory_id FROM inventory WHERE film_id = ${film_id}
+      )
     `);
+
+    await db.query(`DELETE FROM inventory WHERE film_id = ${film_id}`);
+    await db.query(`DELETE FROM film_actor WHERE film_id = ${film_id}`);
+    await db.query(`DELETE FROM film_category WHERE film_id = ${film_id}`);
+    await db.query(`DELETE FROM film WHERE film_id = ${film_id}`);
 
     res.redirect('/movies');
 
@@ -448,33 +461,31 @@ app.post('/afegirPeli', async (req, res) => {
 
     if (table == "film") {
 
-      // 1. Recollir dades del formulari
       const title = req.body.nombre;
       const description = req.body.description;
       const release_year = parseInt(req.body.year, 10);
       const language_id = parseInt(req.body.language, 10);
-      const length = parseInt(req.body.length, 10);
-      const rating = req.body.rating;
+      const length = parseInt(req.body.length, 10) || 0;
+      const rating = req.body.rating || "G";
 
-      // 2. Validació bàsica
       if (!title || !release_year || !language_id) {
         return res.status(400).send('Falten dades');
       }
 
-      // 3. INSERT a la BD
       await db.query(`
-        INSERT INTO film (title, description, release_year, language_id, length, rating)
+        INSERT INTO film 
+        (title, description, release_year, language_id, length, rating, last_update)
         VALUES (
           "${title}",
           "${description}",
           ${release_year},
           ${language_id},
           ${length},
-          "${rating}"
+          "${rating}",
+          NOW()
         );
       `);
 
-      // 4. Redirecció
       res.redirect('/movies');
     }
 

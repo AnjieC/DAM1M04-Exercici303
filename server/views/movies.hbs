@@ -7,7 +7,9 @@
     <body>
         {{> menu}}
         <h1 class="titulopag">Películas</h1>
-        <a href="/movieAdd">Nueva Película</a>
+        <div class="nuevapeli">
+            <a href="/movieAdd"><button>Añadir Nueva Película</button></a>
+        </div>
         <section class="contenido pelis">
             {{#each film}}
                 <div>
@@ -24,7 +26,7 @@
                             <li>{{first_name}} {{last_name}}</li>
                         {{/each}}
                     </ul>
-                    <a href="/movie?id={{film_id}}">Ver detalles...</a>
+                    <a href="/movie?id={{film_id}}" class="verdetalles">Ver detalles...</a>
                 </div>
             {{/each}}
         </section>
