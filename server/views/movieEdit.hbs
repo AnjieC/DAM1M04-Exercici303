@@ -11,7 +11,9 @@
                 <img src="/imatges/caratula.png" alt="caratula">
             </div>
             <div>
-                <form action="">
+                <form method="POST" action="/editarPeli">
+                    <input type="hidden" name="table" value="film">
+                    <input type="hidden" name="film_id" value="{{movie.film_id}}">
                     <label for="nombre">Nombre:</label>
                     <input type="text" id="nombre" name="nombre" value="{{movie.title}}" required>
                     <br>
@@ -35,6 +37,11 @@
                     <br>
                     <label for="rating">Rating:</label>
                     <input type="text" id="rating" name="rating" value="{{movie.rating}}" required>
+                    <button type="submit">Guardar cambios</button>
+                </form>
+                <form method="POST" action="/esborrarPeli">
+                    <input type="hidden" name="film_id" value="{{movie.film_id}}">
+                    <button type="submit">Borrar peli</button>
                 </form>
                 <a href="/movie?id={{movie.film_id}}">Cancelar</a>
             </div>

@@ -348,6 +348,142 @@ app.get('/movieEdit', async (req, res) => {
   }
 });
 
+app.post('/editarPeli', async (req, res) => {
+  try {
+
+    const table = req.body.table;
+
+    if (table == "film") {
+
+      // 1. Recollir dades
+      const film_id = parseInt(req.body.film_id, 10);
+      const title = req.body.nombre;
+      const description = req.body.description;
+      const release_year = parseInt(req.body.year, 10);
+      const language_id = parseInt(req.body.language, 10);
+      const length = parseInt(req.body.length, 10);
+      const rating = req.body.rating;
+
+      // 2. Validacions
+      if (!Number.isInteger(film_id) || film_id <= 0) {
+        return res.status(400).send('ID invàlid');
+      }
+
+      if (!title || !release_year || !language_id) {
+        return res.status(400).send('Falten dades');
+      }
+
+      // 3. UPDATE pel·lícula
+      await db.query(`
+        UPDATE film
+        SET 
+          title = "${title}",
+          description = "${description}",
+          release_year = ${release_year},
+          language_id = ${language_id},
+          length = ${length},
+          rating = "${rating}"
+        WHERE film_id = ${film_id};
+      `);
+
+      // 4. Redirecció
+      res.redirect(`/movie?id=${film_id}`);
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error editant la pel·lícula');
+  }
+});
+
+app.post('/esborrarPeli', async (req, res) => {
+  try {
+    const { film_id } = req.body;
+
+    await db.query(`
+      DELETE FROM film
+      WHERE film_id = ${film_id}
+    `);
+
+    res.redirect('/movies');
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error esborrant la pel·lícula');
+  }
+});
+
+app.get('/movieAdd', async (req, res) => {
+  try {
+    const languageRows = await db.query(`
+      SELECT language_id, name
+      FROM language
+      ORDER BY name;
+    `);
+
+    const languageJson = db.table_to_json(languageRows, {
+      language_id: 'number',
+      name: 'string'
+    });
+
+    const commonData = JSON.parse(
+      fs.readFileSync(path.join(__dirname, 'data', 'common.json'), 'utf8')
+    );
+
+    res.render('movieAdd', {
+      languages: languageJson,
+      common: commonData
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error carregant dades');
+  }
+});
+
+app.post('/afegirPeli', async (req, res) => {
+  try {
+
+    const table = req.body.table;
+
+    if (table == "film") {
+
+      // 1. Recollir dades del formulari
+      const title = req.body.nombre;
+      const description = req.body.description;
+      const release_year = parseInt(req.body.year, 10);
+      const language_id = parseInt(req.body.language, 10);
+      const length = parseInt(req.body.length, 10);
+      const rating = req.body.rating;
+
+      // 2. Validació bàsica
+      if (!title || !release_year || !language_id) {
+        return res.status(400).send('Falten dades');
+      }
+
+      // 3. INSERT a la BD
+      await db.query(`
+        INSERT INTO film (title, description, release_year, language_id, length, rating)
+        VALUES (
+          "${title}",
+          "${description}",
+          ${release_year},
+          ${language_id},
+          ${length},
+          "${rating}"
+        );
+      `);
+
+      // 4. Redirecció
+      res.redirect('/movies');
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error afegint la pel·lícula');
+  }
+});
+
 app.get('/customers', async (req, res) => {
   try {
     const customerRows = await db.query(`
